@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class MainManager : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     public Brick BrickPrefab;
     public int LineCount = 6;
@@ -17,6 +17,11 @@ public class MainManager : MonoBehaviour
     private int m_Points;
     
     private bool m_GameOver = false;
+
+    public Button restartButton;
+    public Button mainMenuButton;
+    public GameObject pauseScreen;
+    public bool gamePaused = false;
 
     
     // Start is called before the first frame update
@@ -60,6 +65,18 @@ public class MainManager : MonoBehaviour
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
+        
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (gamePaused)
+            {
+                ResumeGame();
+            }
+            else
+            {
+                PauseGame();
+            }
+        }
     }
 
     void AddPoint(int point)
@@ -72,5 +89,28 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+
+    public void MainMenuNew()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    public void PauseGame()
+    {
+        pauseScreen.gameObject.SetActive(true);
+        restartButton.gameObject.SetActive(true);
+        mainMenuButton.gameObject.SetActive(true);
+        Time.timeScale = 0f; //Stop time so objects are not affected by physics 
+        gamePaused = true;
+    }
+
+    public void ResumeGame()
+    {
+        pauseScreen.gameObject.SetActive(false);
+        restartButton.gameObject.SetActive(false);
+        mainMenuButton.gameObject.SetActive(false);
+        Time.timeScale = 1f; //Resume time so objects are affected by physics 
+        gamePaused = false;
     }
 }
