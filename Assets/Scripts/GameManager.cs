@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using System.IO;
 
 public class GameManager : MonoBehaviour
 {
@@ -16,8 +17,10 @@ public class GameManager : MonoBehaviour
     
     private bool m_Started = false;
     private int m_Points;
+    public int highScorePoints;
+    public string highScore;
     
-    private bool m_GameOver = false;
+    public bool m_GameOver = false;
 
     public Button restartButton;
     public Button mainMenuButton;
@@ -25,6 +28,7 @@ public class GameManager : MonoBehaviour
     public bool gamePaused = false;
     public Slider volumeSlider;
     public TextMeshProUGUI highScoreText;
+    public TMP_InputField nameInput;
 
     
     // Start is called before the first frame update
@@ -44,6 +48,8 @@ public class GameManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+        LoadScore();
+        nameInput.onSubmit.AddListener(OnNameSubmitted);
     }
 
     private void Update()
@@ -61,13 +67,13 @@ public class GameManager : MonoBehaviour
                 Ball.AddForce(forceDir * 2.0f, ForceMode.VelocityChange);
             }
         }
-        else if (m_GameOver)
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-            }
-        }
+        //else if (m_GameOver)
+        //{
+        //    if (Input.GetKeyDown(KeyCode.Space))
+        //    {
+        //        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        //    }
+        //}
         
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -88,10 +94,35 @@ public class GameManager : MonoBehaviour
         ScoreText.text = $"Score : {m_Points}";
     }
 
+    private void LateUpdate()
+    {
+        //if the current points are greater than the saved high score points, update the high score
+        
+        highScoreText.text = "High Score: " + highScore;
+        if (m_Points > highScorePoints)
+        {
+            highScorePoints = m_Points;
+        }
+    }
+
+    private void OnNameSubmitted(string nameInput)
+    {
+        highScore = highScorePoints + " - " + nameInput;
+        highScoreText.text = "High Score: " + highScore;
+        SaveScore();
+    }
+
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        nameInput.gameObject.SetActive(true);
+        restartButton.gameObject.SetActive(true);
+        mainMenuButton.gameObject.SetActive(true);
+        highScoreText.gameObject.SetActive(true);
+        //highScore = highScorePoints + " - " + nameInput.text;
+        //highScoreText.text = "High Score: " + highScore;
+        //SaveScore();
     }
 
     public void MainMenuNew()
@@ -128,5 +159,35 @@ public class GameManager : MonoBehaviour
         highScoreText.gameObject.SetActive(false);
         Time.timeScale = 1f; //Resume time so objects are affected by physics 
         gamePaused = false;
+    }
+
+    [System.Serializable]
+    class SaveData
+    {
+        public int highScorePoints;
+        public string highScore;
+
+    }
+    public void SaveScore()
+    {
+        SaveData data = new SaveData();
+        data.highScore = highScore;
+        data.highScorePoints = highScorePoints;
+        string json = JsonUtility.ToJson(data);
+
+        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
+    }
+
+    public void LoadScore()
+    {
+        string path = Application.persistentDataPath + "/savefile.json";
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+            highScore = data.highScore;
+            highScorePoints = data.highScorePoints;
+        }
     }
 }
