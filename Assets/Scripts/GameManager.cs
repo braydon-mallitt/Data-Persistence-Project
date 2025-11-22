@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class GameManager : MonoBehaviour
     public int LineCount = 6;
     public Rigidbody Ball;
 
-    public Text ScoreText;
+    public TextMeshProUGUI ScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -22,6 +23,8 @@ public class GameManager : MonoBehaviour
     public Button mainMenuButton;
     public GameObject pauseScreen;
     public bool gamePaused = false;
+    public Slider volumeSlider;
+    public TextMeshProUGUI highScoreText;
 
     
     // Start is called before the first frame update
@@ -96,11 +99,22 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
+    public void RestartGame()
+    {
+        //Get the name of the current loaded scene and then load that scene (reload current scene)
+        gamePaused = false;
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        
+    }
+
     public void PauseGame()
     {
         pauseScreen.gameObject.SetActive(true);
         restartButton.gameObject.SetActive(true);
         mainMenuButton.gameObject.SetActive(true);
+        volumeSlider.gameObject.SetActive(true);
+        highScoreText.gameObject.SetActive(true);
         Time.timeScale = 0f; //Stop time so objects are not affected by physics 
         gamePaused = true;
     }
@@ -110,6 +124,8 @@ public class GameManager : MonoBehaviour
         pauseScreen.gameObject.SetActive(false);
         restartButton.gameObject.SetActive(false);
         mainMenuButton.gameObject.SetActive(false);
+        volumeSlider.gameObject.SetActive(false);
+        highScoreText.gameObject.SetActive(false);
         Time.timeScale = 1f; //Resume time so objects are affected by physics 
         gamePaused = false;
     }
