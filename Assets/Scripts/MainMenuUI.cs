@@ -3,26 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 // Sets the script to be executed later than all default scripts
 // This is helpful for UI, since other things may need to be initialized before setting the UI
 [DefaultExecutionOrder(1000)]
 public class MainMenuUI : MonoBehaviour
 {
-    //public ColorPicker ColorPicker;
-
-   //public void NewColorSelected(Color color)
-   //{
-   //    // add code here to handle when a color is selected
-   //    MainManager.Instance.TeamColor = color;
-   //}
+    public TextMeshProUGUI highScoreText_Main;   
 
     private void Start()
     {
-    //    ColorPicker.Init();
-    //    //this will call the NewColorSelected function when the color picker have a color button clicked.
-    //    ColorPicker.onColorChanged += NewColorSelected;
-    //    ColorPicker.SelectColor(MainManager.Instance.TeamColor); //set the color picker to the current team color
+        if (MainManager.Instance != null)
+        highScoreText_Main.text = "High Score: " + MainManager.Instance.highScore;
     }
 
     public void StartNew()
@@ -30,16 +23,7 @@ public class MainMenuUI : MonoBehaviour
         SceneManager.LoadScene(1);
     }
 
-    //public void SaveColorClicked()
-    //{
-    //    MainManager.Instance.SaveColor();
-    //}
-
-    //public void LoadColorClicked()
-    //{
-    //    MainManager.Instance.LoadColor();
-    //    ColorPicker.SelectColor(MainManager.Instance.TeamColor); //update the color picker to the loaded color
-    //}
+    
 
     public void QuitGame()
     {
@@ -48,6 +32,6 @@ public class MainMenuUI : MonoBehaviour
 #else
         Application.Quit();
 #endif
-        //MainManager.Instance.SaveColor();
+        
     }
 }

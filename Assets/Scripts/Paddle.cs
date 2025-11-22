@@ -7,6 +7,7 @@ public class Paddle : MonoBehaviour
     public float Speed = 2.0f;
     public float MaxMovement = 2.0f;
     public GameManager Manager;
+    public AudioSource paddleSound;
     
     // Start is called before the first frame update
     void Start()
@@ -32,5 +33,10 @@ public class Paddle : MonoBehaviour
             transform.position = pos;
         }
         
+    }
+
+    void OnCollisionEnter(Collision other)
+    {
+        paddleSound.Play();
     }
 }
